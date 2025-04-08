@@ -2,6 +2,8 @@ package controller;
 
 import model.Transaction;
 import model.Category;
+
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -55,4 +57,9 @@ public class DashboardController {
                         Collectors.summingDouble(Transaction::getAmount)
                 ));
     }
+
+    public List<Transaction> getFilteredTransactions(Date start, Date end, Transaction.Type type) {
+        return transactionController.getTransactions(start, end, type, null);
+    }
+
 }

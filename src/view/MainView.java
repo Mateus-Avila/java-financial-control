@@ -40,6 +40,20 @@ public class MainView extends JFrame {
 
         add(tabbedPane);
 
+        tabbedPane.addChangeListener(e -> {
+            int selectedIndex = tabbedPane.getSelectedIndex();
+            Component selectedComponent = tabbedPane.getComponentAt(selectedIndex);
+
+            if (selectedComponent instanceof TransactionView) {
+                ((TransactionView) selectedComponent).updateData();
+            } else if (selectedComponent instanceof CategoryView) {
+                ((CategoryView) selectedComponent).updateData();
+            } else if (selectedComponent instanceof DashboardView) {
+                ((DashboardView) selectedComponent).updateData();
+            }
+        });
+
+
         // Atualiza os dados ao abrir
         dashboardView.updateData();
         transactionView.updateData();

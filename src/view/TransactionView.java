@@ -5,6 +5,8 @@ import model.Category;
 import model.Transaction;
 import view.components.CategoryComboBox;
 import view.components.TransactionTable;
+import javax.swing.SpinnerDateModel;
+import java.text.SimpleDateFormat;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -18,7 +20,7 @@ public class TransactionView extends JPanel {
     private JComboBox<String> typeComboBox;
     private JTextField amountField;
     private JComboBox<Category> categoryComboBox;
-    private JFormattedTextField dateField;
+    private JSpinner dateSpinner;
     private JTextArea descriptionArea;
     private JButton saveButton;
     private TransactionTable transactionTable;
@@ -49,8 +51,10 @@ public class TransactionView extends JPanel {
         formPanel.add(categoryComboBox);
 
         formPanel.add(new JLabel("Data:"));
-        dateField = new JFormattedTextField(new Date());
-        formPanel.add(dateField);
+        SpinnerDateModel spinnerModel = new SpinnerDateModel();
+        dateSpinner = new JSpinner(spinnerModel);
+        dateSpinner.setEditor(new JSpinner.DateEditor(dateSpinner, "dd/MM/yyyy"));
+        formPanel.add(dateSpinner);
 
         formPanel.add(new JLabel("Descrição:"));
         descriptionArea = new JTextArea(3, 20);
@@ -83,13 +87,31 @@ public class TransactionView extends JPanel {
 
     private void saveTransaction() {
         try {
+            // Validação básica
+            if (categoryComboBox.getSelectedItem() == null) {
+                throw new Exception("Selecione uma categoria");
+            }
+
+            if (amountField.getText().trim().isEmpty()) {
+                throw new Exception("Informe o valor");
+            }
+
             Transaction.Type type = typeComboBox.getSelectedIndex() == 0 ?
                     Transaction.Type.INCOME : Transaction.Type.EXPENSE;
 
             double amount = Double.parseDouble(amountField.getText());
             Category category = (Category) categoryComboBox.getSelectedItem();
-            Date date = (Date) dateField.getValue();
+            Date date = ((SpinnerDateModel)dateSpinner.getModel()).getDate();
             String description = descriptionArea.getText();
+
+            // Validações adicionais
+            if (amount <= 0) {
+                throw new Exception("O valor deve ser positivo");
+            }
+
+            if (description.trim().isEmpty()) {
+                throw new Exception("Informe uma descrição");
+            }
 
             controller.addTransaction(type, amount, category, date, description);
             updateData();
@@ -97,8 +119,10 @@ public class TransactionView extends JPanel {
             // Limpa campos
             amountField.setText("");
             descriptionArea.setText("");
+            dateSpinner.setValue(new Date()); // Reseta para data atual
 
             JOptionPane.showMessageDialog(this, "Transação salva com sucesso!");
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
                     "Erro ao salvar transação: " + e.getMessage(),
@@ -107,24 +131,40 @@ public class TransactionView extends JPanel {
     }
 
     public void updateData() {
-        // Atualiza combobox de categorias
-        categoryComboBox.removeAllItems();
-        controller.getAllCategories().forEach(categoryComboBox::addItem);
+        try {
+            // Atualiza combobox de categorias
+            categoryComboBox.removeAllItems();
+            List<Category> categories = controller.getAllCategories();
+            System.out.println("Categorias encontradas: " + categories.size());
 
-        // Atualiza tabela
-        tableModel.setRowCount(0);
-        List<Transaction> transactions = controller.getAllTransactions();
-
-        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
-        for (Transaction t : transactions) {
-            tableModel.addRow(new Object[]{
-                    t.getId(),
-                    t.getType() == Transaction.Type.INCOME ? "Receita" : "Despesa",
-                    currencyFormat.format(t.getAmount()),
-                    t.getCategory().getName(),
-                    t.getDate(),
-                    t.getDescription()
+            categoryComboBox.removeAllItems();
+            categories.forEach(cat -> {
+                System.out.println("Adicionando categoria: " + cat.getName());
+                categoryComboBox.addItem(cat);
             });
+
+            // Atualiza tabela
+            tableModel.setRowCount(0);
+            List<Transaction> transactions = controller.getAllTransactions();
+
+            NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+            for (Transaction t : transactions) {
+                tableModel.addRow(new Object[]{
+                        t.getId(),
+                        t.getType() == Transaction.Type.INCOME ? "Receita" : "Despesa",
+                        currencyFormat.format(t.getAmount()),
+                        t.getCategory().getName(),
+                        dateFormat.format(t.getDate()),
+                        t.getDescription()
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Erro ao carregar categorias: " + e.getMessage(),
+                    "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
