@@ -11,13 +11,14 @@ public class CategoryComboBox extends JComboBox<Category> {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value,
                                                           int index, boolean isSelected, boolean cellHasFocus) {
-                Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
-                if (value instanceof Category) {
-                    ((JLabel) c).setText(((Category) value).getName());
+                if (value == null) {
+                    setText("Selecione uma categoria");
+                } else if (value instanceof Category) {
+                    setText(((Category) value).getName());
                 }
-
-                return c;
+                return this;
             }
         });
     }
