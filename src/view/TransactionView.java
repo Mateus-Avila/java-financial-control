@@ -135,11 +135,9 @@ public class TransactionView extends JPanel {
             // Atualiza combobox de categorias
             categoryComboBox.removeAllItems();
             List<Category> categories = controller.getAllCategories();
-            System.out.println("Categorias encontradas: " + categories.size());
 
             categoryComboBox.removeAllItems();
             categories.forEach(cat -> {
-                System.out.println("Adicionando categoria: " + cat.getName());
                 categoryComboBox.addItem(cat);
             });
 
