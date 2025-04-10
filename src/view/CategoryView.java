@@ -6,7 +6,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.List;  // Importação correta da interface List
+import java.util.List;
 
 public class CategoryView extends JPanel {
     private CategoryController controller;
@@ -20,11 +20,11 @@ public class CategoryView extends JPanel {
         initializeUI();
     }
 
+    // Configura os elementos visuais da interface
     private void initializeUI() {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Painel de formulário
         JPanel formPanel = new JPanel(new GridLayout(2, 2, 10, 10));
 
         nameField = new JTextField();
@@ -35,7 +35,6 @@ public class CategoryView extends JPanel {
         formPanel.add(new JLabel("Descrição:"));
         formPanel.add(new JScrollPane(descriptionArea));
 
-        // Painel de botões
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
         JButton addButton = new JButton("Adicionar");
@@ -47,7 +46,6 @@ public class CategoryView extends JPanel {
         buttonPanel.add(addButton);
         buttonPanel.add(deleteButton);
 
-        // Tabela de categorias
         String[] columns = {"ID", "Nome", "Descrição"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
@@ -58,12 +56,12 @@ public class CategoryView extends JPanel {
 
         categoryTable = new JTable(tableModel);
 
-        // Layout principal
         add(formPanel, BorderLayout.NORTH);
         add(new JScrollPane(categoryTable), BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
+    // Adiciona uma nova categoria
     private void addCategory(ActionEvent event) {
         try {
             String name = nameField.getText();
@@ -76,7 +74,6 @@ public class CategoryView extends JPanel {
             controller.addCategory(name, description);
             updateData();
 
-            // Limpa campos
             nameField.setText("");
             descriptionArea.setText("");
 
@@ -88,6 +85,7 @@ public class CategoryView extends JPanel {
         }
     }
 
+    // Remove a categoria selecionada
     private void deleteCategory(ActionEvent event) {
         int selectedRow = categoryTable.getSelectedRow();
         if (selectedRow == -1) {
@@ -118,14 +116,12 @@ public class CategoryView extends JPanel {
         }
     }
 
+    // Atualiza a tabela com as categorias do usuário
     public void updateData() {
-        // Limpa a tabela
         tableModel.setRowCount(0);
 
-        // Obtém a lista de categorias do controller
-        java.util.List<Category> categories = controller.getAllCategories();
+        List<Category> categories = controller.getAllCategories();
 
-        // Preenche a tabela com as categorias
         for (Category c : categories) {
             tableModel.addRow(new Object[]{
                     c.getId(),

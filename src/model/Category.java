@@ -13,7 +13,6 @@ public class Category {
         this.description = description;
     }
 
-    // Getters
     public int getId() {
         return id;
     }
@@ -26,7 +25,6 @@ public class Category {
         return description;
     }
 
-    // Setters
     public void setName(String name) {
         this.name = name;
     }

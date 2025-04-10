@@ -12,7 +12,7 @@ public class Database {
         users = new ArrayList<>();
         userCategories = new HashMap<>();
         userTransactions = new HashMap<>();
-        initializeSampleData(); // Adiciona dados iniciais
+        initializeSampleData();
     }
 
     public static synchronized Database getInstance() {
@@ -22,7 +22,7 @@ public class Database {
         return instance;
     }
 
-    // Métodos para User
+    // Operações com usuários
     public void addUser(User user) {
         users.add(user);
         userCategories.put(user.getId(), new ArrayList<>());
@@ -36,7 +36,7 @@ public class Database {
                 .orElse(null);
     }
 
-    // Métodos para Category - CORRIGIDOS
+    // Operações com categorias
     public void addCategory(int userId, Category category) {
         if (!userCategories.containsKey(userId)) {
             userCategories.put(userId, new ArrayList<>());
@@ -48,7 +48,7 @@ public class Database {
         return userCategories.getOrDefault(userId, new ArrayList<>());
     }
 
-    // Métodos para Transaction
+    // Operações com transações
     public void addTransaction(int userId, Transaction transaction) {
         if (!userTransactions.containsKey(userId)) {
             userTransactions.put(userId, new ArrayList<>());
@@ -60,13 +60,11 @@ public class Database {
         return userTransactions.getOrDefault(userId, new ArrayList<>());
     }
 
-    // Dados iniciais para teste
+    // Dados iniciais para fins de demonstração
     private void initializeSampleData() {
-        // Usuário admin padrão
         User admin = new User("Admin", "admin@email.com", "admin123");
         addUser(admin);
 
-        // Categorias padrão
         List<Category> defaultCategories = new ArrayList<>();
         defaultCategories.add(new Category("Alimentação", "Supermercado e restaurantes"));
         defaultCategories.add(new Category("Transporte", "Combustível e passagens"));
@@ -75,7 +73,6 @@ public class Database {
 
         userCategories.put(admin.getId(), defaultCategories);
 
-        // Transações de exemplo
         List<Transaction> defaultTransactions = new ArrayList<>();
         defaultTransactions.add(new Transaction(
                 Transaction.Type.INCOME,

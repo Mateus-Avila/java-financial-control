@@ -7,9 +7,7 @@ public class App {
             AuthView authView = new AuthView();
             authView.setVisible(true);
 
-            // Após autenticação bem-sucedida:
-            // MainView mainView = new MainView();
-            // mainView.setVisible(true);
+            // A abertura da tela principal ocorre após a autenticação
         });
     }
 }

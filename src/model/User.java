@@ -15,7 +15,6 @@ public class User {
         this.password = password;
     }
 
-    // Getters
     public int getId() {
         return id;
     }
@@ -32,7 +31,6 @@ public class User {
         return password;
     }
 
-    // Setters
     public void setName(String name) {
         this.name = name;
     }

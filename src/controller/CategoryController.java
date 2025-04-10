@@ -14,9 +14,10 @@ public class CategoryController {
     }
 
     /**
-     * Adiciona uma nova categoria
+     * Cadastra uma nova categoria para o usuário atual.
+     *
      * @param name Nome da categoria
-     * @param description Descrição opcional
+     * @param description Descrição da categoria
      * @return Categoria criada
      */
     public Category addCategory(String name, String description) {
@@ -24,7 +25,6 @@ public class CategoryController {
             throw new IllegalArgumentException("Nome da categoria é obrigatório");
         }
 
-        // Verifica se categoria já existe
         if (db.getUserCategories(currentUserId).stream()
                 .anyMatch(c -> c.getName().equalsIgnoreCase(name))) {
             throw new IllegalArgumentException("Categoria já existe");
@@ -36,7 +36,8 @@ public class CategoryController {
     }
 
     /**
-     * Atualiza uma categoria existente
+     * Atualiza uma categoria existente.
+     *
      * @param categoryId ID da categoria
      * @param newName Novo nome
      * @param newDescription Nova descrição
@@ -61,9 +62,10 @@ public class CategoryController {
     }
 
     /**
-     * Remove uma categoria
+     * Remove uma categoria pelo ID.
+     *
      * @param categoryId ID da categoria
-     * @return true se removido com sucesso
+     * @return true se a categoria for removida
      */
     public boolean removeCategory(int categoryId) {
         List<Category> categories = db.getUserCategories(currentUserId);
@@ -71,17 +73,17 @@ public class CategoryController {
     }
 
     /**
-     * Obtém todas as categorias do usuário
-     * @return Lista de categorias
+     * Retorna todas as categorias do usuário atual.
      */
     public List<Category> getAllCategories() {
         return db.getUserCategories(currentUserId);
     }
 
     /**
-     * Busca categoria por ID
+     * Retorna uma categoria pelo ID.
+     *
      * @param categoryId ID da categoria
-     * @return Categoria encontrada ou null
+     * @return Categoria correspondente ou null
      */
     public Category getCategoryById(int categoryId) {
         return db.getUserCategories(currentUserId).stream()

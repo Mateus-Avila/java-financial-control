@@ -23,7 +23,6 @@ public class Transaction {
         this.description = description;
     }
 
-    // Getters
     public int getId() {
         return id;
     }
@@ -48,7 +47,6 @@ public class Transaction {
         return description;
     }
 
-    // Setters
     public void setType(Type type) {
         this.type = type;
     }
