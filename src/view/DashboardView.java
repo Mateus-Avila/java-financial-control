@@ -1,7 +1,10 @@
 package view;
 
 import controller.DashboardController;
+import controller.CategoryController;
+import model.Category;
 import model.Transaction;
+import view.components.CategoryComboBox;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -13,6 +16,7 @@ import java.util.List;
 
 public class DashboardView extends JPanel {
     private DashboardController controller;
+    private CategoryController categoryController;
     private JLabel balanceLabel;
     private JLabel incomeLabel;
     private JLabel expenseLabel;
@@ -22,10 +26,12 @@ public class DashboardView extends JPanel {
     private JSpinner startDateSpinner;
     private JSpinner endDateSpinner;
     private JComboBox<String> typeFilterComboBox;
+    private CategoryComboBox categoryFilterComboBox;
     private JButton filterButton;
 
     public DashboardView(int userId) {
         this.controller = new DashboardController(userId);
+        this.categoryController = new CategoryController(userId);
         initializeUI();
         updateData();
     }
@@ -44,6 +50,10 @@ public class DashboardView extends JPanel {
         endDateSpinner.setEditor(new JSpinner.DateEditor(endDateSpinner, "dd/MM/yyyy"));
 
         typeFilterComboBox = new JComboBox<>(new String[]{"Todos", "Receita", "Despesa"});
+        categoryFilterComboBox = new CategoryComboBox();
+        if (categoryFilterComboBox.getItemCount() > 0) {
+            categoryFilterComboBox.setSelectedIndex(0);
+        }
 
         filterButton = new JButton("Filtrar");
         filterButton.addActionListener(e -> updateData());
@@ -54,6 +64,8 @@ public class DashboardView extends JPanel {
         filterPanel.add(endDateSpinner);
         filterPanel.add(new JLabel("Tipo:"));
         filterPanel.add(typeFilterComboBox);
+        filterPanel.add(new JLabel("Categoria:"));
+        filterPanel.add(categoryFilterComboBox);
         filterPanel.add(filterButton);
 
         // Painel de resumo
@@ -89,9 +101,12 @@ public class DashboardView extends JPanel {
         recentTransactionsTable.setAutoCreateRowSorter(true);
 
         // Layout final
-        add(filterPanel, BorderLayout.NORTH);
-        add(summaryPanel, BorderLayout.CENTER);
-        add(new JScrollPane(recentTransactionsTable), BorderLayout.SOUTH);
+        JPanel topPanel = new JPanel(new BorderLayout(10, 10));
+        topPanel.add(filterPanel, BorderLayout.NORTH);
+        topPanel.add(summaryPanel, BorderLayout.CENTER);
+
+        add(topPanel, BorderLayout.NORTH);
+        add(new JScrollPane(recentTransactionsTable), BorderLayout.CENTER);
     }
 
     private JPanel createSummaryCard(JLabel contentLabel) {
@@ -107,12 +122,37 @@ public class DashboardView extends JPanel {
     public void updateData() {
         SwingUtilities.invokeLater(() -> {
             try {
+                // ✅ Salva a categoria selecionada antes de limpar o combo
+                Category selectedBeforeUpdate = (Category) categoryFilterComboBox.getSelectedItem();
+
+                // ✅ Recarrega as categorias no combo
+                categoryFilterComboBox.removeAllItems();
+                categoryFilterComboBox.addItem(null); // "Todas as categorias"
+
+                List<Category> categories = categoryController.getAllCategories();
+                if (categories != null) {
+                    for (Category cat : categories) {
+                        categoryFilterComboBox.addItem(cat);
+                    }
+                }
+
+                // ✅ Restaura a seleção anterior (se ainda existir no combo)
+                if (selectedBeforeUpdate != null) {
+                    for (int i = 0; i < categoryFilterComboBox.getItemCount(); i++) {
+                        Category item = categoryFilterComboBox.getItemAt(i);
+                        if (selectedBeforeUpdate.equals(item)) {
+                            categoryFilterComboBox.setSelectedIndex(i);
+                            break;
+                        }
+                    }
+                }
+
                 NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
-                // Filtros
                 Date startDate = ((SpinnerDateModel) startDateSpinner.getModel()).getDate();
                 Date endDate = ((SpinnerDateModel) endDateSpinner.getModel()).getDate();
+                endDate = new Date(endDate.getTime() + (1000 * 60 * 60 * 24) - 1);
                 String selectedType = (String) typeFilterComboBox.getSelectedItem();
 
                 Transaction.Type filterType = null;
@@ -122,9 +162,10 @@ public class DashboardView extends JPanel {
                     filterType = Transaction.Type.EXPENSE;
                 }
 
-                List<Transaction> transactions = controller.getFilteredTransactions(startDate, endDate, filterType);
+                Category selectedCategory = (Category) categoryFilterComboBox.getSelectedItem();
 
-                // Cálculo dos totais
+                List<Transaction> transactions = controller.getFilteredTransactions(startDate, endDate, filterType, selectedCategory);
+
                 double income = transactions.stream()
                         .filter(t -> t.getType() == Transaction.Type.INCOME)
                         .mapToDouble(Transaction::getAmount)
@@ -141,7 +182,6 @@ public class DashboardView extends JPanel {
                 incomeLabel.setText(String.format("Receitas: %s", currencyFormat.format(income)));
                 expenseLabel.setText(String.format("Despesas: %s", currencyFormat.format(expense)));
 
-                // Atualiza tabela
                 tableModel.setRowCount(0);
                 transactions.stream()
                         .sorted((t1, t2) -> t2.getDate().compareTo(t1.getDate()))

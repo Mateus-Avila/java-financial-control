@@ -14,7 +14,7 @@ public class CategoryComboBox extends JComboBox<Category> {
                 super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
                 if (value == null) {
-                    setText("Selecione uma categoria");
+                    setText("Todas as categorias");
                 } else if (value instanceof Category) {
                     setText(((Category) value).getName());
                 }

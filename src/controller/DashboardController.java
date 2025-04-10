@@ -58,8 +58,12 @@ public class DashboardController {
                 ));
     }
 
-    public List<Transaction> getFilteredTransactions(Date start, Date end, Transaction.Type type) {
-        return transactionController.getTransactions(start, end, type, null);
+    public List<Transaction> getFilteredTransactions(Date start, Date end, Transaction.Type type, Category category) {
+        return transactionController.getTransactions(start, end, type, category);
+    }
+
+    public List<Category> getAllCategories() {
+        return transactionController.getAllCategories();
     }
 
 }
