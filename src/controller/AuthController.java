@@ -11,10 +11,11 @@ public class AuthController {
     }
 
     /**
-     * Realiza o login do usuário
+     * Efetua o login do usuário.
+     *
      * @param email Email do usuário
      * @param password Senha do usuário
-     * @return Objeto User se autenticado, null caso contrário
+     * @return Usuário autenticado ou null se inválido
      */
     public User login(String email, String password) {
         if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
@@ -25,11 +26,12 @@ public class AuthController {
     }
 
     /**
-     * Registra um novo usuário
-     * @param name Nome completo
-     * @param email Email válido
-     * @param password Senha (mínimo 6 caracteres)
-     * @return true se registro bem sucedido
+     * Realiza o cadastro de um novo usuário.
+     *
+     * @param name Nome do usuário
+     * @param email Email do usuário
+     * @param password Senha do usuário
+     * @return true se o cadastro for bem-sucedido
      */
     public boolean register(String name, String email, String password) {
         if (name == null || name.isEmpty()) {
@@ -44,7 +46,6 @@ public class AuthController {
             throw new IllegalArgumentException("Senha deve ter pelo menos 6 caracteres");
         }
 
-        // Verifica se usuário já existe
         if (db.authenticateUser(email, password) != null) {
             throw new IllegalArgumentException("Email já cadastrado");
         }

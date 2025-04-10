@@ -17,13 +17,7 @@ public class TransactionController {
     }
 
     /**
-     * Adiciona uma nova transação
-     * @param type Tipo (RECEITA/DESPESA)
-     * @param amount Valor
-     * @param category Categoria
-     * @param date Data
-     * @param description Descrição
-     * @return Transação criada
+     * Registra uma nova transação para o usuário atual.
      */
     public Transaction addTransaction(Transaction.Type type, double amount,
                                       Category category, Date date, String description) {
@@ -40,7 +34,7 @@ public class TransactionController {
         }
 
         if (date == null) {
-            date = new Date(); // Data atual como padrão
+            date = new Date();
         }
 
         Transaction transaction = new Transaction(type, amount, category, date, description);
@@ -49,20 +43,14 @@ public class TransactionController {
     }
 
     /**
-     * Obtém todas as transações sem filtros
-     * @return Lista completa de transações
+     * Retorna todas as transações do usuário atual.
      */
     public List<Transaction> getAllTransactions() {
         return db.getUserTransactions(currentUserId);
     }
 
     /**
-     * Obtém transações com filtros
-     * @param startDate Data inicial (opcional)
-     * @param endDate Data final (opcional)
-     * @param type Tipo (opcional)
-     * @param category Categoria (opcional)
-     * @return Lista filtrada de transações
+     * Retorna transações filtradas por data, tipo e categoria.
      */
     public List<Transaction> getTransactions(Date startDate, Date endDate,
                                              Transaction.Type type, Category category) {
@@ -77,16 +65,14 @@ public class TransactionController {
     }
 
     /**
-     * Obtém todas as categorias disponíveis
-     * @return Lista de categorias
+     * Retorna todas as categorias cadastradas pelo usuário.
      */
     public List<Category> getAllCategories() {
         return db.getUserCategories(currentUserId);
     }
 
     /**
-     * Calcula o saldo total
-     * @return Saldo (receitas - despesas)
+     * Retorna o saldo total (receitas - despesas).
      */
     public double getBalance() {
         List<Transaction> transactions = db.getUserTransactions(currentUserId);
@@ -105,8 +91,7 @@ public class TransactionController {
     }
 
     /**
-     * Obtém o total de receitas
-     * @return Soma de todas as receitas
+     * Retorna o total de receitas.
      */
     public double getTotalIncome() {
         return db.getUserTransactions(currentUserId).stream()
@@ -116,8 +101,7 @@ public class TransactionController {
     }
 
     /**
-     * Obtém o total de despesas
-     * @return Soma de todas as despesas
+     * Retorna o total de despesas.
      */
     public double getTotalExpense() {
         return db.getUserTransactions(currentUserId).stream()

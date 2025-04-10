@@ -16,28 +16,29 @@ public class DashboardController {
     }
 
     /**
-     * Obtém o saldo atual (receitas - despesas)
+     * Retorna o saldo atual do usuário.
      */
     public double getCurrentBalance() {
         return transactionController.getBalance();
     }
 
     /**
-     * Obtém o total de receitas
+     * Retorna o total de receitas.
      */
     public double getTotalIncome() {
         return transactionController.getTotalIncome();
     }
 
     /**
-     * Obtém o total de despesas
+     * Retorna o total de despesas.
      */
     public double getTotalExpense() {
         return transactionController.getTotalExpense();
     }
 
     /**
-     * Obtém transações recentes
+     * Retorna as transações mais recentes.
+     *
      * @param limit Quantidade máxima de transações
      */
     public List<Transaction> getRecentTransactions(int limit) {
@@ -48,7 +49,7 @@ public class DashboardController {
     }
 
     /**
-     * Obtém despesas por categoria
+     * Retorna as despesas agrupadas por categoria.
      */
     public Map<Category, Double> getExpensesByCategory() {
         return transactionController.getTransactions(null, null, Transaction.Type.EXPENSE, null).stream()
@@ -65,5 +66,4 @@ public class DashboardController {
     public List<Category> getAllCategories() {
         return transactionController.getAllCategories();
     }
-
 }

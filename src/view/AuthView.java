@@ -18,6 +18,7 @@ public class AuthView extends JFrame {
         initializeUI();
     }
 
+    // Inicializa os componentes da interface de login
     private void initializeUI() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 300);
@@ -26,7 +27,6 @@ public class AuthView extends JFrame {
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Painel de formulário
         JPanel formPanel = new JPanel(new GridLayout(3, 2, 10, 10));
 
         formPanel.add(new JLabel("Email:"));
@@ -37,7 +37,6 @@ public class AuthView extends JFrame {
         passwordField = new JPasswordField();
         formPanel.add(passwordField);
 
-        // Painel de botões
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
         JButton loginButton = new JButton("Login");
@@ -55,6 +54,7 @@ public class AuthView extends JFrame {
         add(mainPanel);
     }
 
+    // Executa o processo de login ao clicar em "Login"
     private void handleLogin(ActionEvent event) {
         String email = emailField.getText();
         String password = new String(passwordField.getPassword());
@@ -72,6 +72,7 @@ public class AuthView extends JFrame {
         }
     }
 
+    // Exibe o diálogo de cadastro de novo usuário
     private void showRegisterDialog(ActionEvent event) {
         JDialog registerDialog = new JDialog(this, "Cadastro", true);
         registerDialog.setSize(350, 250);

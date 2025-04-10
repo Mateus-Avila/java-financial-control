@@ -36,11 +36,11 @@ public class DashboardView extends JPanel {
         updateData();
     }
 
+    // Configura a interface do painel
     private void initializeUI() {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Painel de filtros
         JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
 
         startDateSpinner = new JSpinner(new SpinnerDateModel());
@@ -68,7 +68,6 @@ public class DashboardView extends JPanel {
         filterPanel.add(categoryFilterComboBox);
         filterPanel.add(filterButton);
 
-        // Painel de resumo
         JPanel summaryPanel = new JPanel(new GridLayout(1, 3, 10, 10));
 
         balanceLabel = new JLabel("Saldo: R$ 0,00", SwingConstants.CENTER);
@@ -88,7 +87,6 @@ public class DashboardView extends JPanel {
         summaryPanel.add(createSummaryCard(incomeLabel));
         summaryPanel.add(createSummaryCard(expenseLabel));
 
-        // Tabela de transações
         String[] columnNames = {"Tipo", "Valor", "Categoria", "Data"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
@@ -100,7 +98,6 @@ public class DashboardView extends JPanel {
         recentTransactionsTable = new JTable(tableModel);
         recentTransactionsTable.setAutoCreateRowSorter(true);
 
-        // Layout final
         JPanel topPanel = new JPanel(new BorderLayout(10, 10));
         topPanel.add(filterPanel, BorderLayout.NORTH);
         topPanel.add(summaryPanel, BorderLayout.CENTER);
@@ -109,6 +106,7 @@ public class DashboardView extends JPanel {
         add(new JScrollPane(recentTransactionsTable), BorderLayout.CENTER);
     }
 
+    // Cria os cartões de resumo financeiro
     private JPanel createSummaryCard(JLabel contentLabel) {
         JPanel card = new JPanel(new BorderLayout());
         card.setBorder(BorderFactory.createCompoundBorder(
@@ -119,15 +117,14 @@ public class DashboardView extends JPanel {
         return card;
     }
 
+    // Atualiza os dados exibidos com base nos filtros aplicados
     public void updateData() {
         SwingUtilities.invokeLater(() -> {
             try {
-                // ✅ Salva a categoria selecionada antes de limpar o combo
                 Category selectedBeforeUpdate = (Category) categoryFilterComboBox.getSelectedItem();
 
-                // ✅ Recarrega as categorias no combo
                 categoryFilterComboBox.removeAllItems();
-                categoryFilterComboBox.addItem(null); // "Todas as categorias"
+                categoryFilterComboBox.addItem(null);
 
                 List<Category> categories = categoryController.getAllCategories();
                 if (categories != null) {
@@ -136,7 +133,6 @@ public class DashboardView extends JPanel {
                     }
                 }
 
-                // ✅ Restaura a seleção anterior (se ainda existir no combo)
                 if (selectedBeforeUpdate != null) {
                     for (int i = 0; i < categoryFilterComboBox.getItemCount(); i++) {
                         Category item = categoryFilterComboBox.getItemAt(i);
@@ -153,9 +149,10 @@ public class DashboardView extends JPanel {
                 Date startDate = ((SpinnerDateModel) startDateSpinner.getModel()).getDate();
                 Date endDate = ((SpinnerDateModel) endDateSpinner.getModel()).getDate();
                 endDate = new Date(endDate.getTime() + (1000 * 60 * 60 * 24) - 1);
-                String selectedType = (String) typeFilterComboBox.getSelectedItem();
 
+                String selectedType = (String) typeFilterComboBox.getSelectedItem();
                 Transaction.Type filterType = null;
+
                 if ("Receita".equals(selectedType)) {
                     filterType = Transaction.Type.INCOME;
                 } else if ("Despesa".equals(selectedType)) {

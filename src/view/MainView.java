@@ -13,12 +13,12 @@ public class MainView extends JFrame {
         initializeUI();
     }
 
+    // Configura a interface principal da aplicação
     private void initializeUI() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(900, 600);
         setLocationRelativeTo(null);
 
-        // Menu superior
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("Arquivo");
         JMenuItem exitItem = new JMenuItem("Sair");
@@ -27,7 +27,6 @@ public class MainView extends JFrame {
         menuBar.add(fileMenu);
         setJMenuBar(menuBar);
 
-        // Painel de abas
         tabbedPane = new JTabbedPane();
 
         DashboardView dashboardView = new DashboardView(userId);
@@ -40,6 +39,7 @@ public class MainView extends JFrame {
 
         add(tabbedPane);
 
+        // Atualiza os dados da aba ao ser selecionada
         tabbedPane.addChangeListener(e -> {
             int selectedIndex = tabbedPane.getSelectedIndex();
             Component selectedComponent = tabbedPane.getComponentAt(selectedIndex);
@@ -53,8 +53,6 @@ public class MainView extends JFrame {
             }
         });
 
-
-        // Atualiza os dados ao abrir
         dashboardView.updateData();
         transactionView.updateData();
         categoryView.updateData();
