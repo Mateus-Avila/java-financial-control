@@ -1,15 +1,24 @@
 package model;
 
-public class User {
-    private static int nextId = 1;
+import javax.persistence.*;
 
+@Entity
+@Table(name = "users")
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private String name;
     private String email;
     private String password;
 
+    public User() {
+        // Construtor vazio obrigatório para o Hibernate
+    }
+
     public User(String name, String email, String password) {
-        this.id = nextId++;
         this.name = name;
         this.email = email;
         this.password = password;
