@@ -26,8 +26,8 @@ public class TransactionView extends JPanel {
     private TransactionTable transactionTable;
     private DefaultTableModel tableModel;
 
-    public TransactionView(int userId) {
-        this.controller = new TransactionController(userId);
+    public TransactionView() {
+        this.controller = new TransactionController();
         initializeUI();
     }
 
