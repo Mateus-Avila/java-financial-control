@@ -1,23 +1,25 @@
 package controller;
 
+import dao.CategoryDAO;
+import dao.TransactionDAO;
 import model.Transaction;
 import model.Category;
-import model.Database;
+
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class TransactionController {
-    private Database db;
-    private int currentUserId;
 
-    public TransactionController(int userId) {
-        this.db = Database.getInstance();
-        this.currentUserId = userId;
+    private final TransactionDAO transactionDAO;
+    private final CategoryDAO categoryDAO;
+
+    public TransactionController() {
+        this.transactionDAO = new TransactionDAO();
+        this.categoryDAO = new CategoryDAO();
     }
 
     /**
-     * Registra uma nova transação para o usuário atual.
+     * Registra uma nova transação.
      */
     public Transaction addTransaction(Transaction.Type type, double amount,
                                       Category category, Date date, String description) {
@@ -38,15 +40,15 @@ public class TransactionController {
         }
 
         Transaction transaction = new Transaction(type, amount, category, date, description);
-        db.addTransaction(currentUserId, transaction);
+        transactionDAO.save(transaction);
         return transaction;
     }
 
     /**
-     * Retorna todas as transações do usuário atual.
+     * Retorna todas as transações do sistema.
      */
     public List<Transaction> getAllTransactions() {
-        return db.getUserTransactions(currentUserId);
+        return transactionDAO.findAll();
     }
 
     /**
@@ -54,59 +56,39 @@ public class TransactionController {
      */
     public List<Transaction> getTransactions(Date startDate, Date endDate,
                                              Transaction.Type type, Category category) {
-        List<Transaction> transactions = db.getUserTransactions(currentUserId);
+        List<Transaction> filtered = transactionDAO.findByDateRange(startDate, endDate);
 
-        return transactions.stream()
-                .filter(t -> startDate == null || !t.getDate().before(startDate))
-                .filter(t -> endDate == null || !t.getDate().after(endDate))
+        return filtered.stream()
                 .filter(t -> type == null || t.getType() == type)
                 .filter(t -> category == null || t.getCategory().equals(category))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
-     * Retorna todas as categorias cadastradas pelo usuário.
+     * Retorna todas as categorias cadastradas.
      */
     public List<Category> getAllCategories() {
-        return db.getUserCategories(currentUserId);
+        return categoryDAO.findAll();
     }
 
     /**
      * Retorna o saldo total (receitas - despesas).
      */
     public double getBalance() {
-        List<Transaction> transactions = db.getUserTransactions(currentUserId);
-
-        double income = transactions.stream()
-                .filter(t -> t.getType() == Transaction.Type.INCOME)
-                .mapToDouble(Transaction::getAmount)
-                .sum();
-
-        double expense = transactions.stream()
-                .filter(t -> t.getType() == Transaction.Type.EXPENSE)
-                .mapToDouble(Transaction::getAmount)
-                .sum();
-
-        return income - expense;
+        return getTotalIncome() - getTotalExpense();
     }
 
     /**
      * Retorna o total de receitas.
      */
     public double getTotalIncome() {
-        return db.getUserTransactions(currentUserId).stream()
-                .filter(t -> t.getType() == Transaction.Type.INCOME)
-                .mapToDouble(Transaction::getAmount)
-                .sum();
+        return transactionDAO.sumByType(Transaction.Type.INCOME);
     }
 
     /**
      * Retorna o total de despesas.
      */
     public double getTotalExpense() {
-        return db.getUserTransactions(currentUserId).stream()
-                .filter(t -> t.getType() == Transaction.Type.EXPENSE)
-                .mapToDouble(Transaction::getAmount)
-                .sum();
+        return transactionDAO.sumByType(Transaction.Type.EXPENSE);
     }
 }
