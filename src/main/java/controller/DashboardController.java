@@ -1,5 +1,6 @@
 package controller;
 
+import controller.TransactionController;
 import model.Transaction;
 import model.Category;
 
@@ -9,14 +10,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DashboardController {
-    private TransactionController transactionController;
+    private final TransactionController transactionController;
 
-    public DashboardController(int userId) {
-        this.transactionController = new TransactionController(userId);
+    public DashboardController() {
+        this.transactionController = new TransactionController();
     }
 
     /**
-     * Retorna o saldo atual do usuário.
+     * Retorna o saldo atual.
      */
     public double getCurrentBalance() {
         return transactionController.getBalance();
@@ -42,7 +43,7 @@ public class DashboardController {
      * @param limit Quantidade máxima de transações
      */
     public List<Transaction> getRecentTransactions(int limit) {
-        return transactionController.getTransactions(null, null, null, null).stream()
+        return transactionController.getAllTransactions().stream()
                 .sorted((t1, t2) -> t2.getDate().compareTo(t1.getDate()))
                 .limit(limit)
                 .collect(Collectors.toList());
@@ -59,10 +60,16 @@ public class DashboardController {
                 ));
     }
 
+    /**
+     * Retorna as transações com filtros.
+     */
     public List<Transaction> getFilteredTransactions(Date start, Date end, Transaction.Type type, Category category) {
         return transactionController.getTransactions(start, end, type, category);
     }
 
+    /**
+     * Retorna todas as categorias cadastradas.
+     */
     public List<Category> getAllCategories() {
         return transactionController.getAllCategories();
     }

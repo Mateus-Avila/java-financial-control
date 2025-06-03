@@ -1,21 +1,39 @@
 package model;
 
+import javax.persistence.*;
 import java.util.Date;
 
+@Entity
+@Table(name = "transactions")
 public class Transaction {
-    public enum Type { INCOME, EXPENSE }
 
-    private static int nextId = 1;
+    public enum Type {
+        INCOME, EXPENSE
+    }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @Enumerated(EnumType.STRING)
     private Type type;
+
     private double amount;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
     private Category category;
+
+    @Temporal(TemporalType.DATE)
     private Date date;
+
     private String description;
 
+    public Transaction() {
+        // Construtor vazio obrigatório para Hibernate
+    }
+
     public Transaction(Type type, double amount, Category category, Date date, String description) {
-        this.id = nextId++;
         this.type = type;
         this.amount = amount;
         this.category = category;

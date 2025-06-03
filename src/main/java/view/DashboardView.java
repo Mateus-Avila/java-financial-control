@@ -29,9 +29,9 @@ public class DashboardView extends JPanel {
     private CategoryComboBox categoryFilterComboBox;
     private JButton filterButton;
 
-    public DashboardView(int userId) {
-        this.controller = new DashboardController(userId);
-        this.categoryController = new CategoryController(userId);
+    public DashboardView() {
+        this.controller = new DashboardController();
+        this.categoryController = new CategoryController();
         initializeUI();
         updateData();
     }

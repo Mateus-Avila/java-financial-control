@@ -29,9 +29,9 @@ public class MainView extends JFrame {
 
         tabbedPane = new JTabbedPane();
 
-        DashboardView dashboardView = new DashboardView(userId);
-        TransactionView transactionView = new TransactionView(userId);
-        CategoryView categoryView = new CategoryView(userId);
+        DashboardView dashboardView = new DashboardView();
+        TransactionView transactionView = new TransactionView();
+        CategoryView categoryView = new CategoryView();
 
         tabbedPane.addTab("Dashboard", dashboardView);
         tabbedPane.addTab("Transações", transactionView);

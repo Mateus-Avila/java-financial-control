@@ -1,14 +1,23 @@
 package model;
 
-public class Category {
-    private static int nextId = 1;
+import javax.persistence.*;
 
+@Entity
+@Table(name = "categories")
+public class Category {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private String name;
     private String description;
 
+    public Category() {
+        // Construtor vazio obrigatório para JPA
+    }
+
     public Category(String name, String description) {
-        this.id = nextId++;
         this.name = name;
         this.description = description;
     }

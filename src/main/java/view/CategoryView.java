@@ -15,8 +15,8 @@ public class CategoryView extends JPanel {
     private JTextField nameField;
     private JTextArea descriptionArea;
 
-    public CategoryView(int userId) {
-        this.controller = new CategoryController(userId);
+    public CategoryView() {
+        this.controller = new CategoryController();
         initializeUI();
     }
 

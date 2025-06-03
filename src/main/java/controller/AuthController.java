@@ -1,13 +1,14 @@
 package controller;
 
+import dao.UserDAO;
 import model.User;
-import model.Database;
 
 public class AuthController {
-    private Database db;
+
+    private final UserDAO userDAO;
 
     public AuthController() {
-        this.db = Database.getInstance();
+        this.userDAO = new UserDAO();
     }
 
     /**
@@ -22,7 +23,12 @@ public class AuthController {
             throw new IllegalArgumentException("Email e senha são obrigatórios");
         }
 
-        return db.authenticateUser(email, password);
+        User user = userDAO.findByEmail(email);
+        if (user != null && user.getPassword().equals(password)) {
+            return user;
+        }
+
+        return null;
     }
 
     /**
@@ -46,12 +52,13 @@ public class AuthController {
             throw new IllegalArgumentException("Senha deve ter pelo menos 6 caracteres");
         }
 
-        if (db.authenticateUser(email, password) != null) {
+        User existingUser = userDAO.findByEmail(email);
+        if (existingUser != null) {
             throw new IllegalArgumentException("Email já cadastrado");
         }
 
         User newUser = new User(name, email, password);
-        db.addUser(newUser);
+        userDAO.save(newUser);
         return true;
     }
 }
