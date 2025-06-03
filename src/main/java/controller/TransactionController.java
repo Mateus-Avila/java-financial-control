@@ -61,7 +61,7 @@ public class TransactionController {
         return filtered.stream()
                 .filter(t -> type == null || t.getType() == type)
                 .filter(t -> category == null || t.getCategory().equals(category))
-                .toList();
+                .collect(java.util.stream.Collectors.toList());
     }
 
     /**
