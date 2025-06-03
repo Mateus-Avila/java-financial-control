@@ -1,20 +1,20 @@
 package controller;
 
+import dao.CategoryDAO;
 import model.Category;
-import model.Database;
+
 import java.util.List;
 
 public class CategoryController {
-    private Database db;
-    private int currentUserId;
 
-    public CategoryController(int userId) {
-        this.db = Database.getInstance();
-        this.currentUserId = userId;
+    private final CategoryDAO categoryDAO;
+
+    public CategoryController() {
+        this.categoryDAO = new CategoryDAO();
     }
 
     /**
-     * Cadastra uma nova categoria para o usuário atual.
+     * Cadastra uma nova categoria.
      *
      * @param name Nome da categoria
      * @param description Descrição da categoria
@@ -25,13 +25,13 @@ public class CategoryController {
             throw new IllegalArgumentException("Nome da categoria é obrigatório");
         }
 
-        if (db.getUserCategories(currentUserId).stream()
-                .anyMatch(c -> c.getName().equalsIgnoreCase(name))) {
+        List<Category> existing = categoryDAO.findAll();
+        if (existing.stream().anyMatch(c -> c.getName().equalsIgnoreCase(name))) {
             throw new IllegalArgumentException("Categoria já existe");
         }
 
         Category newCategory = new Category(name, description);
-        db.addCategory(currentUserId, newCategory);
+        categoryDAO.save(newCategory);
         return newCategory;
     }
 
@@ -44,7 +44,7 @@ public class CategoryController {
      * @return Categoria atualizada
      */
     public Category updateCategory(int categoryId, String newName, String newDescription) {
-        Category category = getCategoryById(categoryId);
+        Category category = categoryDAO.findById(categoryId);
 
         if (category == null) {
             throw new IllegalArgumentException("Categoria não encontrada");
@@ -58,6 +58,7 @@ public class CategoryController {
             category.setDescription(newDescription);
         }
 
+        categoryDAO.update(category);
         return category;
     }
 
@@ -65,18 +66,22 @@ public class CategoryController {
      * Remove uma categoria pelo ID.
      *
      * @param categoryId ID da categoria
-     * @return true se a categoria for removida
+     * @return true se removido
      */
     public boolean removeCategory(int categoryId) {
-        List<Category> categories = db.getUserCategories(currentUserId);
-        return categories.removeIf(c -> c.getId() == categoryId);
+        Category category = categoryDAO.findById(categoryId);
+        if (category != null) {
+            categoryDAO.delete(category);
+            return true;
+        }
+        return false;
     }
 
     /**
-     * Retorna todas as categorias do usuário atual.
+     * Retorna todas as categorias do sistema.
      */
     public List<Category> getAllCategories() {
-        return db.getUserCategories(currentUserId);
+        return categoryDAO.findAll();
     }
 
     /**
@@ -86,9 +91,6 @@ public class CategoryController {
      * @return Categoria correspondente ou null
      */
     public Category getCategoryById(int categoryId) {
-        return db.getUserCategories(currentUserId).stream()
-                .filter(c -> c.getId() == categoryId)
-                .findFirst()
-                .orElse(null);
+        return categoryDAO.findById(categoryId);
     }
 }
