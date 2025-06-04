@@ -22,39 +22,39 @@
     </repositories>
 
     <dependencies>
-        <!-- Hibernate Core -->
+        <!-- Hibernate 6 Core -->
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>5.6.15.Final</version>
+            <version>6.3.1.Final</version>
         </dependency>
 
-        <!-- JPA API -->
+        <!-- SQLite Dialect via Hibernate Community Dialects -->
         <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>javax.persistence-api</artifactId>
-            <version>2.2</version>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-community-dialects</artifactId>
+            <version>6.3.1.Final</version>
         </dependency>
 
-        <!-- SQLite JDBC -->
+        <!-- JDBC SQLite Driver -->
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.41.2.2</version>
         </dependency>
 
-        <!-- SQLite Dialect do Gwenn (via JitPack) -->
-        <dependency>
-            <groupId>com.github.gwenn</groupId>
-            <artifactId>sqlite-dialect</artifactId>
-            <version>0.1.2</version>
-        </dependency>
-
-        <!-- Logger necessário para Hibernate -->
+        <!-- SLF4J para logs -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.30</version>
+        </dependency>
+
+        <!-- JPA API -->
+        <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+            <version>3.1.0</version>
         </dependency>
     </dependencies>
 
