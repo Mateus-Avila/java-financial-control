@@ -1,6 +1,7 @@
 package model;
 
 import jakarta.persistence.*;
+import model.User;
 
 @Entity
 @Table(name = "categories")
@@ -12,14 +13,19 @@ public class Category {
 
     private String name;
     private String description;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Category() {
         // Construtor vazio obrigatório para JPA
     }
 
-    public Category(String name, String description) {
+    public Category(String name, String description, User user) {
         this.name = name;
         this.description = description;
+        this.user = user;
     }
 
     public int getId() {
@@ -34,12 +40,20 @@ public class Category {
         return description;
     }
 
+    public User getUser() {
+        return user;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override

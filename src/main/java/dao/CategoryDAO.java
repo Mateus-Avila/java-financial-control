@@ -22,15 +22,22 @@ public class CategoryDAO {
         }
     }
 
-    public List<Category> findAll() {
+    public List<Category> findAll(int userId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("FROM Category", Category.class).list();
+            Query<Category> query = session.createQuery(
+                    "FROM Category WHERE user.id = :userId", Category.class);
+            query.setParameter("userId", userId);
+            return query.list();
         }
     }
 
-    public Category findById(int id) {
+    public Category findById(int id, int userId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.get(Category.class, id);
+            Query<Category> query = session.createQuery(
+                    "FROM Category WHERE id = :id AND user.id = :userId", Category.class);
+            query.setParameter("id", id);
+            query.setParameter("userId", userId);
+            return query.uniqueResult();
         }
     }
 

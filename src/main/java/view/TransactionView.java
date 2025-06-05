@@ -17,6 +17,7 @@ import java.util.List;
 
 public class TransactionView extends JPanel {
     private TransactionController controller;
+    private final int userId;
     private JComboBox<String> typeComboBox;
     private JTextField amountField;
     private JComboBox<Category> categoryComboBox;
@@ -26,8 +27,9 @@ public class TransactionView extends JPanel {
     private TransactionTable transactionTable;
     private DefaultTableModel tableModel;
 
-    public TransactionView() {
-        this.controller = new TransactionController();
+    public TransactionView(int userId) {
+        this.userId = userId;
+        this.controller = new TransactionController(userId);
         initializeUI();
     }
 

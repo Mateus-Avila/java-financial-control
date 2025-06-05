@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 public class DashboardController {
     private final TransactionController transactionController;
 
-    public DashboardController() {
-        this.transactionController = new TransactionController();
+    public DashboardController(int userId) {
+        this.transactionController = new TransactionController(userId);
     }
 
     /**
