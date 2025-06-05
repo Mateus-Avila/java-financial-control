@@ -2,8 +2,10 @@ package controller;
 
 import dao.CategoryDAO;
 import dao.TransactionDAO;
+import dao.UserDAO;
 import model.Transaction;
 import model.Category;
+import model.User;
 
 import java.util.Date;
 import java.util.List;
@@ -12,10 +14,14 @@ public class TransactionController {
 
     private final TransactionDAO transactionDAO;
     private final CategoryDAO categoryDAO;
+    private final UserDAO userDAO;
+    private final int userId;
 
-    public TransactionController() {
+    public TransactionController(int userId) {
         this.transactionDAO = new TransactionDAO();
         this.categoryDAO = new CategoryDAO();
+        this.userDAO = new UserDAO();
+        this.userId = userId;
     }
 
     /**
@@ -39,7 +45,8 @@ public class TransactionController {
             date = new Date();
         }
 
-        Transaction transaction = new Transaction(type, amount, category, date, description);
+        User user = userDAO.findById(userId);
+        Transaction transaction = new Transaction(type, amount, category, user, date, description);
         transactionDAO.save(transaction);
         return transaction;
     }
@@ -48,7 +55,7 @@ public class TransactionController {
      * Retorna todas as transações do sistema.
      */
     public List<Transaction> getAllTransactions() {
-        return transactionDAO.findAll();
+        return transactionDAO.findAll(userId);
     }
 
     /**
@@ -56,7 +63,7 @@ public class TransactionController {
      */
     public List<Transaction> getTransactions(Date startDate, Date endDate,
                                              Transaction.Type type, Category category) {
-        List<Transaction> filtered = transactionDAO.findByDateRange(startDate, endDate);
+        List<Transaction> filtered = transactionDAO.findByDateRange(startDate, endDate, userId);
 
         return filtered.stream()
                 .filter(t -> type == null || t.getType() == type)
@@ -68,7 +75,7 @@ public class TransactionController {
      * Retorna todas as categorias cadastradas.
      */
     public List<Category> getAllCategories() {
-        return categoryDAO.findAll();
+        return categoryDAO.findAll(userId);
     }
 
     /**
@@ -82,13 +89,13 @@ public class TransactionController {
      * Retorna o total de receitas.
      */
     public double getTotalIncome() {
-        return transactionDAO.sumByType(Transaction.Type.INCOME);
+        return transactionDAO.sumByType(Transaction.Type.INCOME, userId);
     }
 
     /**
      * Retorna o total de despesas.
      */
     public double getTotalExpense() {
-        return transactionDAO.sumByType(Transaction.Type.EXPENSE);
+        return transactionDAO.sumByType(Transaction.Type.EXPENSE, userId);
     }
 }

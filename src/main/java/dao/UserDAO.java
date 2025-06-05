@@ -24,7 +24,16 @@ public class UserDAO {
 
     public User findByEmail(String email) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.get(User.class, 1); // apenas teste
+            Query<User> query = session.createQuery(
+                    "FROM User WHERE email = :email", User.class);
+            query.setParameter("email", email);
+            return query.uniqueResult();
+        }
+    }
+
+    public User findById(int id) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.get(User.class, id);
         }
     }
 

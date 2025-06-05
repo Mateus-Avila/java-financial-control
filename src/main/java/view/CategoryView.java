@@ -10,13 +10,15 @@ import java.util.List;
 
 public class CategoryView extends JPanel {
     private CategoryController controller;
+    private final int userId;
     private JTable categoryTable;
     private DefaultTableModel tableModel;
     private JTextField nameField;
     private JTextArea descriptionArea;
 
-    public CategoryView() {
-        this.controller = new CategoryController();
+    public CategoryView(int userId) {
+        this.userId = userId;
+        this.controller = new CategoryController(userId);
         initializeUI();
     }
 

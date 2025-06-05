@@ -23,34 +23,41 @@ public class TransactionDAO {
         }
     }
 
-    public List<Transaction> findAll() {
+    public List<Transaction> findAll(int userId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("FROM Transaction", Transaction.class).list();
-        }
-    }
-
-    public List<Transaction> findByType(Type type) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Query<Transaction> query = session.createQuery("FROM Transaction WHERE type = :type", Transaction.class);
-            query.setParameter("type", type);
+            Query<Transaction> query = session.createQuery(
+                    "FROM Transaction WHERE user.id = :userId", Transaction.class);
+            query.setParameter("userId", userId);
             return query.list();
         }
     }
 
-    public List<Transaction> findByDateRange(Date startDate, Date endDate) {
+    public List<Transaction> findByType(Type type, int userId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Query<Transaction> query = session.createQuery(
-                    "FROM Transaction WHERE date BETWEEN :start AND :end", Transaction.class);
+                    "FROM Transaction WHERE user.id = :userId AND type = :type", Transaction.class);
+            query.setParameter("type", type);
+            query.setParameter("userId", userId);
+            return query.list();
+        }
+    }
+
+    public List<Transaction> findByDateRange(Date startDate, Date endDate, int userId) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Query<Transaction> query = session.createQuery(
+                    "FROM Transaction WHERE user.id = :userId AND date BETWEEN :start AND :end", Transaction.class);
+            query.setParameter("userId", userId);
             query.setParameter("start", startDate);
             query.setParameter("end", endDate);
             return query.list();
         }
     }
 
-    public double sumByType(Type type) {
+    public double sumByType(Type type, int userId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Query<Double> query = session.createQuery(
-                    "SELECT SUM(amount) FROM Transaction WHERE type = :type", Double.class);
+                    "SELECT SUM(amount) FROM Transaction WHERE user.id = :userId AND type = :type", Double.class);
+            query.setParameter("userId", userId);
             query.setParameter("type", type);
             Double result = query.uniqueResult();
             return result != null ? result : 0.0;

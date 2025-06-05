@@ -1,16 +1,22 @@
 package controller;
 
 import dao.CategoryDAO;
+import dao.UserDAO;
 import model.Category;
+import model.User;
 
 import java.util.List;
 
 public class CategoryController {
 
     private final CategoryDAO categoryDAO;
+    private final UserDAO userDAO;
+    private final int userId;
 
-    public CategoryController() {
+    public CategoryController(int userId) {
         this.categoryDAO = new CategoryDAO();
+        this.userDAO = new UserDAO();
+        this.userId = userId;
     }
 
     /**
@@ -25,12 +31,12 @@ public class CategoryController {
             throw new IllegalArgumentException("Nome da categoria é obrigatório");
         }
 
-        List<Category> existing = categoryDAO.findAll();
+        List<Category> existing = categoryDAO.findAll(userId);
         if (existing.stream().anyMatch(c -> c.getName().equalsIgnoreCase(name))) {
             throw new IllegalArgumentException("Categoria já existe");
         }
-
-        Category newCategory = new Category(name, description);
+        User user = userDAO.findById(userId);
+        Category newCategory = new Category(name, description, user);
         categoryDAO.save(newCategory);
         return newCategory;
     }
@@ -44,7 +50,7 @@ public class CategoryController {
      * @return Categoria atualizada
      */
     public Category updateCategory(int categoryId, String newName, String newDescription) {
-        Category category = categoryDAO.findById(categoryId);
+        Category category = categoryDAO.findById(categoryId, userId);
 
         if (category == null) {
             throw new IllegalArgumentException("Categoria não encontrada");
@@ -69,7 +75,7 @@ public class CategoryController {
      * @return true se removido
      */
     public boolean removeCategory(int categoryId) {
-        Category category = categoryDAO.findById(categoryId);
+        Category category = categoryDAO.findById(categoryId, userId);
         if (category != null) {
             categoryDAO.delete(category);
             return true;
@@ -81,7 +87,7 @@ public class CategoryController {
      * Retorna todas as categorias do sistema.
      */
     public List<Category> getAllCategories() {
-        return categoryDAO.findAll();
+        return categoryDAO.findAll(userId);
     }
 
     /**
@@ -91,6 +97,6 @@ public class CategoryController {
      * @return Categoria correspondente ou null
      */
     public Category getCategoryById(int categoryId) {
-        return categoryDAO.findById(categoryId);
+        return categoryDAO.findById(categoryId, userId);
     }
 }

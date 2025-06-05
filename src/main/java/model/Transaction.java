@@ -1,6 +1,7 @@
 package model;
 
 import jakarta.persistence.*;
+import model.User;
 import java.util.Date;
 
 @Entity
@@ -24,6 +25,10 @@ public class Transaction {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @Temporal(TemporalType.DATE)
     private Date date;
 
@@ -33,10 +38,11 @@ public class Transaction {
         // Construtor vazio obrigatório para Hibernate
     }
 
-    public Transaction(Type type, double amount, Category category, Date date, String description) {
+    public Transaction(Type type, double amount, Category category, User user, Date date, String description) {
         this.type = type;
         this.amount = amount;
         this.category = category;
+        this.user = user;
         this.date = date != null ? date : new Date();
         this.description = description;
     }
@@ -57,6 +63,10 @@ public class Transaction {
         return category;
     }
 
+    public User getUser() {
+        return user;
+    }
+
     public Date getDate() {
         return date;
     }
@@ -75,6 +85,10 @@ public class Transaction {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public void setDate(Date date) {
