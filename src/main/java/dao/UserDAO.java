@@ -23,10 +23,14 @@ public class UserDAO {
     }
 
     public User findByEmail(String email) {
+        if (email == null) {
+            return null;
+        }
+        String normalized = email.trim().toLowerCase();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Query<User> query = session.createQuery(
-                    "FROM User WHERE email = :email", User.class);
-            query.setParameter("email", email);
+                    "FROM User WHERE lower(email) = :email", User.class);
+            query.setParameter("email", normalized);
             return query.uniqueResult();
         }
     }

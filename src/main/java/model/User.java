@@ -11,7 +11,10 @@ public class User {
     private int id;
 
     private String name;
+
+    @Column(unique = true, nullable = false)
     private String email;
+
     private String password;
 
     public User() {
@@ -20,7 +23,7 @@ public class User {
 
     public User(String name, String email, String password) {
         this.name = name;
-        this.email = email;
+        setEmail(email);
         this.password = password;
     }
 
@@ -45,7 +48,11 @@ public class User {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        if (email != null) {
+            this.email = email.trim().toLowerCase();
+        } else {
+            this.email = null;
+        }
     }
 
     public void setPassword(String password) {

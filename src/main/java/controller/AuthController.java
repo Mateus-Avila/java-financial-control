@@ -52,12 +52,13 @@ public class AuthController {
             throw new IllegalArgumentException("Senha deve ter pelo menos 6 caracteres");
         }
 
-        User existingUser = userDAO.findByEmail(email);
+        String normalizedEmail = email.trim().toLowerCase();
+        User existingUser = userDAO.findByEmail(normalizedEmail);
         if (existingUser != null) {
             throw new IllegalArgumentException("Email já cadastrado");
         }
 
-        User newUser = new User(name, email, password);
+        User newUser = new User(name.trim(), normalizedEmail, password);
         userDAO.save(newUser);
         return true;
     }
