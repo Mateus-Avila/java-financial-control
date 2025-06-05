@@ -15,6 +15,10 @@ public class CategoryView extends JPanel {
     private DefaultTableModel tableModel;
     private JTextField nameField;
     private JTextArea descriptionArea;
+    private JButton addButton;
+    private JButton editButton;
+    private JButton deleteButton;
+    private int selectedCategoryId = -1;
 
     public CategoryView(int userId) {
         this.userId = userId;
@@ -22,7 +26,6 @@ public class CategoryView extends JPanel {
         initializeUI();
     }
 
-    // Configura os elementos visuais da interface
     private void initializeUI() {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -39,13 +42,19 @@ public class CategoryView extends JPanel {
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
-        JButton addButton = new JButton("Adicionar");
-        addButton.addActionListener(this::addCategory);
+        addButton = new JButton("Adicionar");
+        editButton = new JButton("Atualizar");
+        deleteButton = new JButton("Excluir");
 
-        JButton deleteButton = new JButton("Excluir");
+        addButton.addActionListener(this::addCategory);
+        editButton.addActionListener(this::editCategory);
         deleteButton.addActionListener(this::deleteCategory);
 
+        // Inicialmente o botão de edição fica desabilitado
+        editButton.setEnabled(false);
+
         buttonPanel.add(addButton);
+        buttonPanel.add(editButton);
         buttonPanel.add(deleteButton);
 
         String[] columns = {"ID", "Nome", "Descrição"};
@@ -57,10 +66,61 @@ public class CategoryView extends JPanel {
         };
 
         categoryTable = new JTable(tableModel);
+        categoryTable.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                handleTableSelection();
+            }
+        });
 
         add(formPanel, BorderLayout.NORTH);
         add(new JScrollPane(categoryTable), BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+    private void handleTableSelection() {
+        int selectedRow = categoryTable.getSelectedRow();
+        if (selectedRow != -1) {
+            selectedCategoryId = (int) tableModel.getValueAt(selectedRow, 0);
+            nameField.setText((String) tableModel.getValueAt(selectedRow, 1));
+            descriptionArea.setText((String) tableModel.getValueAt(selectedRow, 2));
+
+            addButton.setEnabled(false);
+            editButton.setEnabled(true);
+            deleteButton.setEnabled(true);
+        } else {
+            clearForm();
+        }
+    }
+
+    private void clearForm() {
+        selectedCategoryId = -1;
+        nameField.setText("");
+        descriptionArea.setText("");
+        addButton.setEnabled(true);
+        editButton.setEnabled(false);
+        deleteButton.setEnabled(false);
+        categoryTable.clearSelection();
+    }
+
+    private void editCategory(ActionEvent event) {
+        try {
+            String name = nameField.getText();
+            String description = descriptionArea.getText();
+
+            if (name == null || name.trim().isEmpty()) {
+                throw new IllegalArgumentException("O nome da categoria é obrigatório");
+            }
+
+            controller.updateCategory(selectedCategoryId, name, description);
+            updateData();
+            clearForm();
+
+            JOptionPane.showMessageDialog(this, "Categoria atualizada com sucesso!");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Erro ao atualizar categoria: " + e.getMessage(),
+                    "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     // Adiciona uma nova categoria
@@ -121,6 +181,7 @@ public class CategoryView extends JPanel {
     // Atualiza a tabela com as categorias do usuário
     public void updateData() {
         tableModel.setRowCount(0);
+        clearForm();
 
         List<Category> categories = controller.getAllCategories();
 
