@@ -17,8 +17,18 @@ public class UserDAO {
             session.save(user);
             transaction.commit();
         } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
-            e.printStackTrace();
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            throw new RuntimeException("Erro ao salvar usuário: " + e.getMessage(), e);
+        }
+    }
+
+    public User findById(int id) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.get(User.class, id);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar usuário por ID: " + e.getMessage(), e);
         }
     }
 
@@ -26,25 +36,55 @@ public class UserDAO {
         if (email == null) {
             return null;
         }
-        String normalized = email.trim().toLowerCase();
+
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Query<User> query = session.createQuery(
-                    "FROM User WHERE lower(email) = :email", User.class);
-            query.setParameter("email", normalized);
-            return query.uniqueResult();
+            String hql = "FROM User WHERE email = :email";
+            Query<User> query = session.createQuery(hql, User.class);
+            query.setParameter("email", email.trim().toLowerCase());
+            try {
+                return query.uniqueResult();
+            } catch (Exception e) {
+                return null;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar usuário por email: " + e.getMessage(), e);
         }
     }
 
-    public User findById(int id) {
+    public void update(User user) {
+        Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.get(User.class, id);
+            transaction = session.beginTransaction();
+            session.update(user);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            throw new RuntimeException("Erro ao atualizar usuário: " + e.getMessage(), e);
         }
     }
 
+    public void delete(User user) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.delete(user);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            throw new RuntimeException("Erro ao deletar usuário: " + e.getMessage(), e);
+        }
+    }
 
     public List<User> findAll() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery("FROM User", User.class).list();
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao listar usuários: " + e.getMessage(), e);
         }
     }
 }
+
